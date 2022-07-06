@@ -1,44 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterapp/data/employee.dart';
 import 'package:flutterapp/ui/employee_app_bar.dart';
-import 'package:localstorage/localstorage.dart';
+
+import 'create_employee.dart';
 
 class EmployeePage extends StatefulWidget {
-  EmployeePage({Key key}) : super(key: key);
+  EmployeePage({Key? key}) : super(key: key);
 
   @override
   _EmployeePageState createState() => new _EmployeePageState();
 }
 
 class _EmployeePageState extends State<EmployeePage> {
-  final EmployeeList list = new EmployeeList();
-  final LocalStorage storage = new LocalStorage('employee_app');
-  bool initialized = false;
-  TextEditingController controller = new TextEditingController();
-
-  void initState() {
-    List list1 = storage.getItem('employees');
-    setState(() {
-      list.items = list1.map((element) {
-        element = new Employee.fromJson(element);
-      }).toList();
-    });
-  }
-
-  _removeItem(int index) {
-    setState(() {
-      list.items.removeAt(index);
-      _saveToStorage();
-    });
-  }
-
-  _saveToStorage() {
-    storage.setItem('employees', list.toJSONEncodable());
-  }
-
   @override
   Widget build(BuildContext context) {
+    CollectionReference employees= FirebaseFirestore.instance.collection('employees');
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('Conaug App'),
@@ -47,54 +24,57 @@ class _EmployeePageState extends State<EmployeePage> {
       body: Container(
           padding: EdgeInsets.all(10.0),
           constraints: BoxConstraints.expand(),
-          child: FutureBuilder(
-            future: storage.ready,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.data == null) {
+          child: StreamBuilder(
+            stream:
+            employees.snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
-
-              if (!initialized) {
-                var items = storage.getItem('employees');
-
-                if (items != null) {
-                  list.items = List<Employee>.from(
-                    (items as List).map(
-                      (item) => Employee(
-                          name: item['name'],
-                          emailId: item['emailId'],
-                          designation: item['designation']),
-                    ),
-                  );
-                }
-              }
-
-              List<Widget> widgets = list.items.map((item) {
-                return ListTile(
-                  leading: Icon(Icons.contacts),
-                  title: Text(item.name),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(item.emailId), Text(item.designation)],
-                  ),
-                  trailing: GestureDetector(
-                      onTap: () {
-                        _removeItem(list.items.indexOf(item));
-                      },
-                      child: Icon(
-                        Icons.delete,
-                      )),
-                );
-              }).toList();
 
               return Column(
                 children: <Widget>[
                   Expanded(
                     flex: 1,
                     child: ListView(
-                      children: widgets,
+                      children: snapshot.data!.docs.map((employee) {
+
+                        return ListTile(
+                          leading: Icon(Icons.contacts),
+                          title: Text(employee['name']),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(employee['emailId']),
+                              Text(employee['designation'])
+                            ],
+                          ),
+                          trailing:Container(
+                            width: 50,
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                      CreateEmployee(employee:employee)), (Route<dynamic> route) => false);
+                                },
+                                child: Icon(
+                                  Icons.edit,
+                                )),
+                            GestureDetector(
+                                onTap: () {
+                                  employee.reference.delete();
+                                },
+                                child: Icon(
+                                  Icons.delete,
+                                ))
+                          ],)),
+                        );
+                      }).toList(),
                       itemExtent: 50.0,
                     ),
                   ),

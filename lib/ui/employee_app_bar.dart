@@ -31,9 +31,10 @@ class AppBarWidget extends StatelessWidget {
                           color: Colors.white,
                           textColor: Colors.blueAccent,
                           onPressed: () {
-
-                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                EmployeePage()), (Route<dynamic> route) => false);
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => EmployeePage()),
+                                (Route<dynamic> route) => false);
                           },
                         ),
                       ),
@@ -48,9 +49,10 @@ class AppBarWidget extends StatelessWidget {
                           color: Colors.white,
                           textColor: Colors.blueAccent,
                           onPressed: () {
-                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                CreateEmployee()), (Route<dynamic> route) => false);
-
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => CreateEmployee()),
+                                (Route<dynamic> route) => false);
                           },
                         ),
                       ),

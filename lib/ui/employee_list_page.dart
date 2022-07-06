@@ -15,7 +15,8 @@ class EmployeePage extends StatefulWidget {
 class _EmployeePageState extends State<EmployeePage> {
   @override
   Widget build(BuildContext context) {
-    CollectionReference employees= FirebaseFirestore.instance.collection('employees');
+    CollectionReference employees =
+        FirebaseFirestore.instance.collection('employees');
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('Conaug App'),
@@ -25,8 +26,7 @@ class _EmployeePageState extends State<EmployeePage> {
           padding: EdgeInsets.all(10.0),
           constraints: BoxConstraints.expand(),
           child: StreamBuilder(
-            stream:
-            employees.snapshots(),
+            stream: employees.snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
@@ -41,7 +41,6 @@ class _EmployeePageState extends State<EmployeePage> {
                     flex: 1,
                     child: ListView(
                       children: snapshot.data!.docs.map((employee) {
-
                         return ListTile(
                           leading: Icon(Icons.contacts),
                           title: Text(employee['name']),
@@ -52,27 +51,37 @@ class _EmployeePageState extends State<EmployeePage> {
                               Text(employee['designation'])
                             ],
                           ),
-                          trailing:Container(
-                            width: 50,
-                              child:Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                      CreateEmployee(employee:employee)), (Route<dynamic> route) => false);
-                                },
-                                child: Icon(
-                                  Icons.edit,
-                                )),
-                            GestureDetector(
-                                onTap: () {
-                                  employee.reference.delete();
-                                },
-                                child: Icon(
-                                  Icons.delete,
-                                ))
-                          ],)),
+                          trailing: Container(
+                              width: 50,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder:
+                                                        (context) =>
+                                                            CreateEmployee(
+                                                                employee:
+                                                                    employee)),
+                                                (Route<dynamic> route) =>
+                                                    false);
+                                      },
+                                      child: Icon(
+                                        Icons.edit,
+                                      )),
+                                  GestureDetector(
+                                      onTap: () {
+                                        employee.reference.delete();
+                                      },
+                                      child: Icon(
+                                        Icons.delete,
+                                      ))
+                                ],
+                              )),
                         );
                       }).toList(),
                       itemExtent: 50.0,

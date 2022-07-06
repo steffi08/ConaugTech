@@ -5,15 +5,20 @@ import 'package:flutterapp/ui/employee_list_page.dart';
 
 class CreateEmployee extends StatefulWidget {
   CreateEmployee({Key? key, this.employee}) : super(key: key);
-   final QueryDocumentSnapshot? employee;
+  final QueryDocumentSnapshot? employee;
+
   @override
-  _CreateEmployeeState createState() => new _CreateEmployeeState(employee: employee);
+  _CreateEmployeeState createState() =>
+      new _CreateEmployeeState(employee: employee);
 }
 
 class _CreateEmployeeState extends State<CreateEmployee> {
   final QueryDocumentSnapshot? employee;
+
   _CreateEmployeeState({this.employee});
-  CollectionReference employees= FirebaseFirestore.instance.collection('employees');
+
+  CollectionReference employees =
+      FirebaseFirestore.instance.collection('employees');
   final _formKey = GlobalKey<FormState>();
   TextEditingController? nameController;
   TextEditingController? emailController;
@@ -21,32 +26,26 @@ class _CreateEmployeeState extends State<CreateEmployee> {
 
   void initState() {
     super.initState();
-    nameController = TextEditingController(text:employee!=null?employee!['name']:'');
-    emailController = TextEditingController(text:employee!=null?employee!['emailId']:'');
-    designationController = TextEditingController(text:employee!=null?employee!['designation']:'');
+    nameController =
+        TextEditingController(text: employee != null ? employee!['name'] : '');
+    emailController = TextEditingController(
+        text: employee != null ? employee!['emailId'] : '');
+    designationController = TextEditingController(
+        text: employee != null ? employee!['designation'] : '');
   }
 
   _addEmployee(String name, String emailId, String designation) {
-      employees.add({
-        'name':name,
-        'emailId':emailId,
-        'designation':designation
-      });
+    employees
+        .add({'name': name, 'emailId': emailId, 'designation': designation});
   }
 
   _updateEmployee(String name, String emailId, String designation) {
-    employee!.reference.update({
-      'name':name,
-      'emailId':emailId,
-      'designation':designation
-    });
+    employee!.reference
+        .update({'name': name, 'emailId': emailId, 'designation': designation});
   }
 
-
-
   @override
-  Widget build(BuildContext context){
-
+  Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('Conaug App'),
@@ -60,14 +59,13 @@ class _CreateEmployeeState extends State<CreateEmployee> {
             SizedBox(
               height: 10,
             ),
-            Text('${employee != null?'Edit Employee':'Create Employee'}'),
+            Text('${employee != null ? 'Edit Employee' : 'Create Employee'}'),
             Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextFormField(
-
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter some text';
@@ -78,7 +76,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                     decoration: const InputDecoration(
                       hintText: 'Enter employee name',
                       labelText: 'Name',
-
                     ),
                   ),
                   TextFormField(
@@ -110,8 +107,9 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                   new Container(
                       padding: const EdgeInsets.only(left: 100.0, top: 40.0),
                       child: new RaisedButton(
-                        child:  Text('${employee != null?'Edit Employee':'Create Employee'}'),
-                        onPressed: employee != null?_update:_save,
+                        child: Text(
+                            '${employee != null ? 'Edit Employee' : 'Create Employee'}'),
+                        onPressed: employee != null ? _update : _save,
                       )),
                 ],
               ),
@@ -123,16 +121,18 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   }
 
   void _save() {
-       if (_formKey.currentState!.validate()) {
-         _addEmployee(nameController!.value.text, emailController!.value.text,
-        designationController!.value.text);
-    nameController!.clear();
-    emailController!.clear();
-    designationController!.clear();
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => EmployeePage()),
-        (Route<dynamic> route) => false);
-  }}
+    if (_formKey.currentState!.validate()) {
+      _addEmployee(nameController!.value.text, emailController!.value.text,
+          designationController!.value.text);
+      nameController!.clear();
+      emailController!.clear();
+      designationController!.clear();
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => EmployeePage()),
+          (Route<dynamic> route) => false);
+    }
+  }
+
   void _update() {
     if (_formKey.currentState!.validate()) {
       _updateEmployee(nameController!.value.text, emailController!.value.text,
@@ -140,6 +140,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => EmployeePage()),
-              (Route<dynamic> route) => false);
-    }}
+          (Route<dynamic> route) => false);
+    }
+  }
 }
